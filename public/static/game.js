@@ -11,8 +11,11 @@ socket.on('message', function(data) {
 });
 
 var canvas = document.getElementById('canvas');
-canvas.width = 1000;
-canvas.height = 500;
+socket.on('data', function(canvasData) {
+	canvas.width = canvasData.width;
+	canvas.height = canvasData.height;
+});
+
 
 var movement = {
   up: false,
@@ -53,7 +56,7 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-socket.emit('new player', canvas.width);
+socket.emit('new player');
 setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
@@ -72,5 +75,4 @@ socket.on('state', function(players, ball) {
   context.beginPath();
   context.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
   context.fill();
-  socket.emit('check-bounce', canvas.width, canvas.height);
 });

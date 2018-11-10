@@ -11,6 +11,8 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
+var wallHittable = true;
+var playerHittable = true;
 var restart = false;
 
 var app = express();
@@ -93,34 +95,35 @@ var ball = {
     y : 250,
     xSpeed : 0,
     ySpeed : 0,
-    radius : 10
+    radius : 5
 };
-
+var canvas = {
+	width: 1000,
+	height: 500
+};
 io.on('connection', function(socket) {
+	socket.emit('data', canvas);
   var startX = 100;
   
-  
-  
-  if(Object.keys(players).length < 2) {
-    if(Object.keys(players).length == 1) {
-      ball.xSpeed = 400;
-      ball.ySpeed = 400;
-    }
-    socket.on('new player', function(canvasW) {
-      for(id in players) {
-        if(players[id].x < canvasW/2) {
-          startX = 900;
-        }
-      }
-      players[socket.id] = {
-        x: startX,
-        y: 250,
-        width: 10,
-        height: 50
-      };
-    });
-    
-  }
+  socket.on('new player', function() {
+		if(Object.keys(players).length < 2) {
+			if(Object.keys(players).length == 1) {
+				ball.xSpeed = 400;
+				ball.ySpeed = 400;
+			}
+			for(id in players) {
+				if(players[id].x < canvas.width/2) {
+					startX = 900;
+				}
+			}
+			players[socket.id] = {
+				x: startX,
+				y: 250,
+				width: 10,
+				height: 50
+			};
+		}
+	});
   
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
@@ -145,36 +148,80 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     delete players[socket.id];
   });
-  
-  socket.on('check-bounce', function(canvasW, canvasH) {
-    if((ball.y - ball.radius) <= 0 || (ball.y + ball.radius) >= canvasH) {
-      //ball.ySpeed = ball.ySpeed * -1;
-      ball.ySpeed = ((ball.y - ball.radius) <= 0) ? (Math.abs(ball.ySpeed)) :(Math.abs(ball.ySpeed) * -1) ;
-    }
-    for(id in players) {
-      var player = players[id];
-      if(player.x > canvasW/2) {
-        //Right Player
-        if(ball.y + ball.radius >= player.y && ball.y - ball.radius < (player.y + player.height) &&
-           ball.x + ball.radius >= player.x && ball.x - ball.radius <= player.x) {
-          ball.xSpeed = ball.xSpeed * -1;
-        }           
-      } else {
-        //Left player
-        if(ball.y + ball.radius >= player.y && ball.y - ball.radius < (player.y + player.height) &&
-           ball.x + ball.radius >= (player.x + player.width) && ball.x - ball.radius <= (player.x + player.width)) {
-          ball.xSpeed = ball.xSpeed * -1;
-        }
-        
-      }
-    }
-  });
-  
 });
 
 
+
+
 var lastUpdateTime = (new Date()).getTime();
-function updateBall(ball) {
+async function updateBall() {
+	if((ball.y - ball.radius) <= 0 || (ball.y + ball.radius) >= canvas.height) {
+		ball.y = ((ball.y - ball.radius) <= 0) ? (1 + ball.radius) : (canvas.height - ball.radius - 1) ;
+		ball.ySpeed = ball.ySpeed * -1;
+	}
+	for(id in players) {
+		var player = players[id];
+		if(player.x > canvas.width/2) {
+			//Right Player
+			
+			//If the ball hits the paddle left side
+			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
+				 ball.x + ball.radius >= player.x && ball.x + ball.radius <= player.x + player.width) {
+				ball.xSpeed = ball.xSpeed * -1;
+				ball.x = player.x - ball.radius - 1;
+				continue;
+			}
+			
+			//If the ball hits the paddle top
+			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
+				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
+				{
+				ball.ySpeed = ball.ySpeed * -1;
+				ball.xSpeed = ball.xSpeed * -1;
+				ball.y = player.y - ball.radius - 1;
+				continue;
+			}
+			//If the ball hits the paddle bottom
+			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
+				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
+				{
+				ball.ySpeed = ball.ySpeed * -1;
+				ball.xSpeed = ball.xSpeed * -1;
+				ball.y = player.y + player.height + ball.radius + 1;
+				continue;
+				}
+		} else {
+			//Left player
+			
+			//If the ball hits the paddle right side
+			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
+				 ball.x - ball.radius <= player.x + player.width && ball.x - ball.radius >= player.x) {
+				ball.xSpeed = ball.xSpeed * -1;
+				console.log(ball.x);
+				ball.x = player.x + ball.radius + 1;
+				continue;
+			}
+			
+			//If the ball hits the paddle top
+			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
+				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
+				{
+				ball.ySpeed = ball.ySpeed * -1;
+				ball.xSpeed = ball.xSpeed * -1;
+				ball.y = player.y - ball.radius - 1;
+				continue;
+			}
+			//If the ball hits the paddle bottom
+			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
+				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
+				{
+				ball.ySpeed = ball.ySpeed * -1;
+				ball.xSpeed = ball.xSpeed * -1;
+				ball.y = player.y + player.height + ball.radius + 1;
+				continue;
+			}		
+		}
+	}
   var currentTime = (new Date()).getTime();
   var timeDifference = currentTime - lastUpdateTime;
   ball.x += Math.round((ball.xSpeed * timeDifference)/1000);
@@ -189,7 +236,6 @@ function updateBall(ball) {
 
 
 setInterval(function() {
-  updateBall(ball);
-  
+  updateBall();
   io.sockets.emit('state', players, ball);
 }, 1000 / 60);
