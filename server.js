@@ -14,6 +14,7 @@ var socketIO = require('socket.io');
 var wallHittable = true;
 var playerHittable = true;
 var restart = false;
+var tickRate = 60;
 
 var app = express();
 var server = http.Server(app);
@@ -154,17 +155,38 @@ io.on('connection', function(socket) {
 
 
 var lastUpdateTime = (new Date()).getTime();
-async function updateBall() {
-	if((ball.y - ball.radius) <= 0 || (ball.y + ball.radius) >= canvas.height) {
+function updateBall() {
+  if(restart) {
+    ball.x = 500;
+    ball.y = 250;
+    restart = false;
+  }
+  
+  //If the ball hits the top or bottom of the board
+	if(ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
 		ball.y = ((ball.y - ball.radius) <= 0) ? (1 + ball.radius) : (canvas.height - ball.radius - 1) ;
 		ball.ySpeed = ball.ySpeed * -1;
 	}
+  
+  //TEMPORARY: If the ball hits the side walls (bounces back)
+  //Left side wall
+  if(ball.x - ball.radius <= 0) {
+    ball.xSpeed = ball.xSpeed * -1;
+    ball.x = ball.radius + 1;
+  }
+  //Right side wall
+  if(ball.x + ball.radius >= canvas.width) {
+    ball.xSpeed = ball.xSpeed * -1;
+    ball.x = canvas.width - ball.radius - 1;
+  }
+  
+  
 	for(id in players) {
 		var player = players[id];
 		if(player.x > canvas.width/2) {
 			//Right Player
 			
-			//If the ball hits the paddle left side
+			//If the ball hits the paddle's left side
 			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
 				 ball.x + ball.radius >= player.x && ball.x + ball.radius <= player.x + player.width) {
 				ball.xSpeed = ball.xSpeed * -1;
@@ -172,7 +194,7 @@ async function updateBall() {
 				continue;
 			}
 			
-			//If the ball hits the paddle top
+			//If the ball hits the paddle's top
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
 				{
@@ -181,7 +203,7 @@ async function updateBall() {
 				ball.y = player.y - ball.radius - 1;
 				continue;
 			}
-			//If the ball hits the paddle bottom
+			//If the ball hits the paddle's bottom
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
 				{
@@ -193,28 +215,30 @@ async function updateBall() {
 		} else {
 			//Left player
 			
-			//If the ball hits the paddle right side
+			//If the ball hits the paddle's right side
 			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
 				 ball.x - ball.radius <= player.x + player.width && ball.x - ball.radius >= player.x) {
-				ball.xSpeed = ball.xSpeed * -1;
-				console.log(ball.x);
-				ball.x = player.x + ball.radius + 1;
+				console.log('Right side');
+        ball.xSpeed = ball.xSpeed * -1;
+				ball.x = player.x + player.width + ball.radius + 1;
 				continue;
 			}
 			
-			//If the ball hits the paddle top
+			//If the ball hits the paddle's top
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
 				{
+        console.log('Top side');
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
 				ball.y = player.y - ball.radius - 1;
 				continue;
 			}
-			//If the ball hits the paddle bottom
+			//If the ball hits the paddle's bottom
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
 				{
+        console.log('Bottom side');
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
 				ball.y = player.y + player.height + ball.radius + 1;
@@ -222,15 +246,11 @@ async function updateBall() {
 			}		
 		}
 	}
+  
   var currentTime = (new Date()).getTime();
   var timeDifference = currentTime - lastUpdateTime;
   ball.x += Math.round((ball.xSpeed * timeDifference)/1000);
   ball.y += Math.round((ball.ySpeed * timeDifference)/1000);
-  if(restart) {
-    ball.x = 500;
-    ball.y = 250;
-    restart = false;
-  }
   lastUpdateTime = currentTime;
 }
 
@@ -238,4 +258,4 @@ async function updateBall() {
 setInterval(function() {
   updateBall();
   io.sockets.emit('state', players, ball);
-}, 1000 / 60);
+}, 1000 / tickRate);
