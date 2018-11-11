@@ -168,6 +168,7 @@ function updateBall() {
 		ball.ySpeed = ball.ySpeed * -1;
 	}
   
+  /*
   //TEMPORARY: If the ball hits the side walls (bounces back)
   //Left side wall
   if(ball.x - ball.radius <= 0) {
@@ -179,6 +180,7 @@ function updateBall() {
     ball.xSpeed = ball.xSpeed * -1;
     ball.x = canvas.width - ball.radius - 1;
   }
+  */
   
   
 	for(id in players) {
@@ -218,7 +220,6 @@ function updateBall() {
 			//If the ball hits the paddle's right side
 			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
 				 ball.x - ball.radius <= player.x + player.width && ball.x - ball.radius >= player.x) {
-				console.log('Right side');
         ball.xSpeed = ball.xSpeed * -1;
 				ball.x = player.x + player.width + ball.radius + 1;
 				continue;
@@ -228,7 +229,6 @@ function updateBall() {
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
 				{
-        console.log('Top side');
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
 				ball.y = player.y - ball.radius - 1;
@@ -238,7 +238,6 @@ function updateBall() {
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
 				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
 				{
-        console.log('Bottom side');
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
 				ball.y = player.y + player.height + ball.radius + 1;
