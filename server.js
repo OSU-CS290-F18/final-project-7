@@ -79,10 +79,7 @@ app.get("*", function(req, res, next) {
     res.status(404);
 });
 
-var port = process.env.PORT;
-if(!port) {
-    port = 3000;
-}
+var port = process.env.PORT || 6969;
 server.listen(port, function(err) {
     if(err) {
         throw err;
@@ -101,6 +98,10 @@ var ball = {
 var canvas = {
 	width: 1000,
 	height: 500
+};
+var score = {
+  player1: 0,
+  player2: 0
 };
 io.on('connection', function(socket) {
 	socket.emit('data', canvas);
@@ -151,9 +152,6 @@ io.on('connection', function(socket) {
   });
 });
 
-
-
-
 var lastUpdateTime = (new Date()).getTime();
 function updateBall() {
   if(restart) {
@@ -168,7 +166,7 @@ function updateBall() {
 		ball.ySpeed = ball.ySpeed * -1;
 	}
   
-  /*
+  
   //TEMPORARY: If the ball hits the side walls (bounces back)
   //Left side wall
   if(ball.x - ball.radius <= 0) {
@@ -180,7 +178,7 @@ function updateBall() {
     ball.xSpeed = ball.xSpeed * -1;
     ball.x = canvas.width - ball.radius - 1;
   }
-  */
+  
   
   
 	for(id in players) {

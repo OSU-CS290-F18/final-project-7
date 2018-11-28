@@ -1,4 +1,4 @@
-document.getElementById('filter-update-button').addEventListener('click', function() {
+document.getElementById('restart-button').addEventListener('click', function() {
   $.ajax({
 		url: '/restart-game',
 		type: 'POST'

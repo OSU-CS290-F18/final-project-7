@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>A Multiplayer Game</title>
+    <link rel="stylesheet" href="/style.css">
     <style>
       canvas {
         width: 1000px;
@@ -12,7 +13,10 @@
   </head>
   <body>
     <canvas id="canvas"></canvas>
-    <button id="filter-update-button" class="action-button">Restart</button>
+    <div class = "scoreboard">
+      Score:
+    </div>
+    <button id="restart-button">Restart</button>
   </body>
   <script src="/static/game.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
