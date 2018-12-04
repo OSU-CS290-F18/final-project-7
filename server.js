@@ -28,14 +28,14 @@ var winnerFound = false;
 
 var players = {};
 var ball = {
-    x : 500,
+    x : 400,
     y : 250,
     xSpeed : 0,
     ySpeed : 0,
     radius : 5
 };
 var canvas = {
-	width: 1000,
+	width: 800,
 	height: 500
 };
 var score = {
@@ -98,7 +98,7 @@ app.get("*", function(req, res) {
 
 io.on('connection', function(socket) {
 	socket.emit('data', canvas);
-  var startX = 100;
+  var startX = 50;
 	socket.emit('jsonData', highscores);
 
   socket.on('new player', function() {
@@ -107,12 +107,12 @@ io.on('connection', function(socket) {
 			rightPlayerScore = 0;
 			for(id in players) {
 				if(players[id].x < canvas.width/2) {
-					startX = 900;
+					startX = 750;
 				}
 			}
 			players[socket.id] = {
 				x: startX,
-				y: 250,
+				y: 225,
 				width: 10,
 				height: 50,
 				ready: false
@@ -174,6 +174,12 @@ function resetGame(xSpeed, ySpeed) {
 	resetBall(xSpeed, ySpeed);
 	leftPlayerScore = 0;
 	rightPlayerScore = 0;
+
+  for(id in players){
+    players[id].y = 225;
+  }
+
+	io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
 }
 
 function updateBall() {

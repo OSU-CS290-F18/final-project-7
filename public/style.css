@@ -12,6 +12,7 @@ h1 {
 canvas {
   background-color: #000;
   border-color: #C0C0C0;
+  max-width: 1000px;
 }
 
 body {
@@ -29,24 +30,36 @@ body {
   color: #000000;
   padding: 10px;
 }
+#sidebar{
+  position: relative;
+  float:right;
+}
+
+aside h3{
+  color: #FFFFFF;
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+aside .games-won-container{
+  margin: 2px;
+}
+
+aside b{
+  margin: 2px;
+  font-weight: normal;
+}
 
 aside {
-  float: right;
   min-width: 150px;
   max-width: 175px;
-  margin: 0px;
+  margin: 10px;
   padding: 20px;
   border-radius: 3px;
   border: 5px solid #FFFFFF;
   align-items: center;
   color: #00FF00;
 }
-
-}
-aside h3{
-  color: #FFFFFF;
-}
-
 
 a {
   text-decoration: none;

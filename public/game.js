@@ -49,7 +49,6 @@ function handleCloseModalButtonClick(event) {
     modalBackdrop.classList.add('hidden');
     sellSomethingModal.classList.add('hidden');
 
-    //Save data
     $.ajax({
   		url: '/restart-game',
   		type: 'POST'
@@ -61,7 +60,6 @@ function showModal(event){
   modalBackdrop.classList.remove('hidden');
   sellSomethingModal.classList.remove('hidden');
 }
-
 
 
 document.getElementById('restart-button').addEventListener('click', function() {
@@ -145,7 +143,13 @@ socket.on('state', function(players, ball) {
 
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
   console.log("Player 1: %d    Player 2: %d", leftPlayerScore, rightPlayerScore);
+  var leftScore = document.getElementById('score-container-left');
+  var rightScore = document.getElementById('score-container-right');
+  leftScore.textContent = "Left Player: " + leftPlayerScore.toString();
+  rightScore.textContent = "Right Player: " + rightPlayerScore.toString();
+
 });
+
 
 socket.on('winner', function(winner) {
   userId = socket.io.engine.id
