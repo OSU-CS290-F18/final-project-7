@@ -1,15 +1,14 @@
 function createGameHistory(name1,number_of_wins){
-  var gameHistory = document.createElement('div');
+    var gameHistory = document.createElement('div');
+    var insertedString = name1 + ": " + number_of_wins
 
     gameHistory.classList.add('game-history');
-    var name = document.createElement('p');
-    name.textContent = name1;
-    gameHistory.appendChild(name)
+    var insertedParagraph = document.createElement('b');
+    insertedParagraph.textContent = insertedString;
+    gameHistory.appendChild(insertedParagraph)
 
 
-    var wins = document.createElement('p')
-    wins.textContent = number_of_wins;
-    gameHistory.appendChild(wins);
+
     var historyContainer = document.getElementById("games-won-container");
 
 
@@ -119,7 +118,7 @@ setInterval(function() {
 var context = canvas.getContext('2d');
 socket.on('state', function(players, ball) {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = 'green';
+  context.fillStyle = 'lime';
   for (var id in players) {
     var player = players[id];
     context.beginPath();

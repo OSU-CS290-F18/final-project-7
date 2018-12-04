@@ -12,14 +12,15 @@
         <img src="/PONG_BROS.png" alt="PONG BROS logo" style="width:100px;height:100px;" >
       </div>
 
-      <h1 class="site-title"><a href="#">PONG BROS</a></h1>
+      <h1 class="site-title">PONG BROS</a></h1>
     </header>
 
     <style>
       canvas {
         width: 1000px;
         height: 500px;
-        border: 5px solid black;
+        border-radius: 3px;
+        border: 5px solid #FFFFFF;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
@@ -30,11 +31,12 @@
       <div id="games-won-container" class="games-won-container">
       </div>
     </aside>
+    <button id="restart-button">Restart</button>
     <canvas id="canvas"></canvas>
     <div class = "scoreboard">
       Score:
     </div>
-    <button id="restart-button">Restart</button>
+
 
 
     <div id="modal-backdrop" class="hidden"></div>
