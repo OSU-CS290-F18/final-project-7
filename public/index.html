@@ -1,36 +1,34 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>Games</title>
-
-    <!-- This is a 3rd-party stylesheet to make available the font families to be used for this page ("Roboto" and "Roboto Slab"). -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab:100" rel="stylesheet">
-
-    <!-- This 3rd party stylesheet incorporates SVG icons from Font Awesome: http://fontawesome.com/ -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" crossorigin="anonymous">
-
+    <title>A Multiplayer Game</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/PONG_BROS.png">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="/index.js" charset="utf-8" defer></script>
-  </head>
-  <body>
 
     <header>
+      <div class="header-image-container">
+        <img src="/PONG_BROS.png" alt="PONG BROS logo" style="width:100px;height:100px;" >
+      </div>
 
+      <h1 class="site-title"><a href="#">PONG BROS</a></h1>
     </header>
 
-    <main class="content">
-        <div>
-          <label for="filter-text" class="filter-input-label">Text</label>
-          <input type="text" name="filter-text" id="filter-text" class="filter-input">
-          <button id="filter-update-button" class="action-button">Update</button>
-          <a href = "/static/game_page.html">Game</a>
-        </div>
-
-    </main>
-
+    <style>
+      canvas {
+        width: 1000px;
+        height: 500px;
+        border: 5px solid black;
+      }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class = "scoreboard">
+      Score:
+    </div>
+    <button id="restart-button">Restart</button>
   </body>
-
+  <script src="/game.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </html>

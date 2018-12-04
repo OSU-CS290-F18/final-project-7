@@ -5,7 +5,7 @@
  * name: Ashyan Rahavi
  * email: rahavia@oregonstate.edu
  */
- 
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var http = require('http');
@@ -57,11 +57,11 @@ app.get("/index.js", function(req, res, next) {
 */
 
 app.use(express.static('public'));
-app.use('/static', express.static(__dirname + '/public/static'));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 
 app.post("/update-text*", function(req, res, next) {
     console.log('test');
@@ -79,7 +79,7 @@ app.get("*", function(req, res, next) {
     res.status(404);
 });
 
-var port = process.env.PORT || 6969;
+var port = process.env.PORT || 8123;
 server.listen(port, function(err) {
     if(err) {
         throw err;
@@ -106,12 +106,12 @@ var score = {
 io.on('connection', function(socket) {
 	socket.emit('data', canvas);
   var startX = 100;
-  
+
   socket.on('new player', function() {
 		if(Object.keys(players).length < 2) {
 			if(Object.keys(players).length == 1) {
-				ball.xSpeed = 400;
-				ball.ySpeed = 400;
+				ball.xSpeed = 350;
+				ball.ySpeed = 350;
 			}
 			for(id in players) {
 				if(players[id].x < canvas.width/2) {
@@ -126,7 +126,7 @@ io.on('connection', function(socket) {
 			};
 		}
 	});
-  
+
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
     /*
@@ -146,7 +146,7 @@ io.on('connection', function(socket) {
       player.y += 5;
     }
   });
-  
+
   socket.on('disconnect', function() {
     delete players[socket.id];
   });
@@ -158,15 +158,16 @@ function updateBall() {
     ball.x = 500;
     ball.y = 250;
     restart = false;
+		console.log('Restart button pressed');
   }
-  
+
   //If the ball hits the top or bottom of the board
 	if(ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
 		ball.y = ((ball.y - ball.radius) <= 0) ? (1 + ball.radius) : (canvas.height - ball.radius - 1) ;
 		ball.ySpeed = ball.ySpeed * -1;
 	}
-  
-  
+
+
   //TEMPORARY: If the ball hits the side walls (bounces back)
   //Left side wall
   if(ball.x - ball.radius <= 0) {
@@ -178,14 +179,14 @@ function updateBall() {
     ball.xSpeed = ball.xSpeed * -1;
     ball.x = canvas.width - ball.radius - 1;
   }
-  
-  
-  
+
+
+
 	for(id in players) {
 		var player = players[id];
 		if(player.x > canvas.width/2) {
 			//Right Player
-			
+
 			//If the ball hits the paddle's left side
 			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
 				 ball.x + ball.radius >= player.x && ball.x + ball.radius <= player.x + player.width) {
@@ -193,10 +194,10 @@ function updateBall() {
 				ball.x = player.x - ball.radius - 1;
 				continue;
 			}
-			
+
 			//If the ball hits the paddle's top
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
+				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height))
 				{
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
@@ -214,7 +215,7 @@ function updateBall() {
 				}
 		} else {
 			//Left player
-			
+
 			//If the ball hits the paddle's right side
 			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
 				 ball.x - ball.radius <= player.x + player.width && ball.x - ball.radius >= player.x) {
@@ -222,10 +223,10 @@ function updateBall() {
 				ball.x = player.x + player.width + ball.radius + 1;
 				continue;
 			}
-			
+
 			//If the ball hits the paddle's top
 			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height)) 
+				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height))
 				{
 				ball.ySpeed = ball.ySpeed * -1;
 				ball.xSpeed = ball.xSpeed * -1;
@@ -240,10 +241,10 @@ function updateBall() {
 				ball.xSpeed = ball.xSpeed * -1;
 				ball.y = player.y + player.height + ball.radius + 1;
 				continue;
-			}		
+			}
 		}
 	}
-  
+
   var currentTime = (new Date()).getTime();
   var timeDifference = currentTime - lastUpdateTime;
   ball.x += Math.round((ball.xSpeed * timeDifference)/1000);
