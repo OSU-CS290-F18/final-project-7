@@ -24,6 +24,7 @@ var urlencodedParser = bodyParser.urlencoded({extended: true});
 
 var leftPlayerScore = 0;
 var rightPlayerScore = 0;
+var winnerFound = false;
 
 //async function myTimer() {
 //    console.log('This prints every second');
@@ -73,7 +74,7 @@ app.post("/update-text*", function(req, res, next) {
 });
 
 app.post("/restart-game", function(req, res, next) {
-  restart = true;
+  resetBall();
   res.end();
 });
 
@@ -159,12 +160,13 @@ io.on('connection', function(socket) {
 });
 
 var lastUpdateTime = (new Date()).getTime();
+
+function resetBall() {
+	ball.x = 500;
+	ball.y = 250;
+}
+
 function updateBall() {
-  if(restart) {
-    ball.x = 500;
-    ball.y = 250;
-    restart = false;
-  }
 
   //If the ball hits the top or bottom of the board
 	if(ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
@@ -176,32 +178,18 @@ function updateBall() {
   //If the ball goes out of the walls
   //Left side wall
   if(ball.x - ball.radius <= 0) {
-		restart = true;
-		leftPlayerScore += 1;
+		ball.xSpeed = ball.xSpeed * -1;
+		resetBall();
+		rightPlayerScore += 1;
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
   //Right side wall
   if(ball.x + ball.radius >= canvas.width) {
-		restart = true;
-		rightPlayerScore += 1;
+		ball.xSpeed = ball.xSpeed * -1;
+		resetBall();
+		leftPlayerScore += 1
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
-
-	if(leftPlayerScore >= 10 || rightPlayerScore >= 10) {
-		var leftSocket;
-		var rightSocket;
-		for(id in players) {
-			if(players[id].x < canvas.width/2) {
-				leftSocket = id;
-			} else {
-				rightSocket = id;
-			}
-		}
-		var winner = leftPlayerScore >= 10 ? leftSocket : rightSocket;
-		io.sockets.emit('winner', winner)
-		ball.xSpeed = 0;
-		ball.ySpeed = 0;
-	}
 
 
 	for(id in players) {
@@ -274,8 +262,30 @@ function updateBall() {
   lastUpdateTime = currentTime;
 }
 
+function checkWinner() {
+	if(leftPlayerScore >= 10 || rightPlayerScore >= 10) {
+		winnerFound = true;
+		var leftSocket;
+		var rightSocket;
+		for(id in players) {
+			if(players[id].x < canvas.width/2) {
+				leftSocket = id;
+			} else {
+				rightSocket = id;
+			}
+		}
+		var winner = leftPlayerScore >= 10 ? leftSocket : rightSocket;
+		io.sockets.emit('winner', winner)
+		ball.xSpeed = 0;
+		ball.ySpeed = 0;
+	}
+}
+
 
 setInterval(function() {
   updateBall();
   io.sockets.emit('state', players, ball);
+	if(winnerFound == false) {
+		checkWinner();
+	}
 }, 1000 / tickRate);

@@ -1,6 +1,6 @@
 function createGameHistory(name1,number_of_wins){
   var gameHistory = document.createElement('div');
-  
+
   gameHistory.classList.add('game-history');
   var name = document.createElement('embed');
   name.textContent = name1;
@@ -81,13 +81,17 @@ socket.on('state', function(players, ball) {
 });
 
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
-  console.log('Left Player:', leftPlayerScore, 'Right Player:', rightPlayerScore);
+  //code for when someone scores
 });
+
 socket.on('winner', function(winner) {
-  if(winner == socket.socket.sessionid) {
+  userId = socket.io.engine.id
+  if(winner == userId) {
     //code for winner
+    console.log('you won');
   } else {
     //code for loser
+    console.log('you lost');
   }
 
 });
