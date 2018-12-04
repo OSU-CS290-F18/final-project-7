@@ -7,7 +7,6 @@
  */
 
 var express = require('express');
-var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
@@ -23,23 +22,26 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-var urlencodedParser = bodyParser.urlencoded({extended: true});
-
 var leftPlayerScore = 0;
 var rightPlayerScore = 0;
 var winnerFound = false;
 
-//async function myTimer() {
-//    console.log('This prints every second');
-//}
-//setInterval(myTimer, 1000);
-
-app.use(function (req, res, next) {
-	console.log("== Request made");
-	console.log("  - Method:", req.method);
-	console.log("  - URL:", req.url);
-	next();
-});
+var players = {};
+var ball = {
+    x : 500,
+    y : 250,
+    xSpeed : 0,
+    ySpeed : 0,
+    radius : 5
+};
+var canvas = {
+	width: 1000,
+	height: 500
+};
+var score = {
+  player1: 0,
+  player2: 0
+};
 
 /*
 app.get("/", function(req, res, next) {
@@ -63,53 +65,37 @@ app.get("/index.js", function(req, res, next) {
 });
 */
 
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
-
-
-app.post("/update-text*", function(req, res, next) {
-    console.log('test');
-    console.log(req.body);
-    res.end();
+var port = process.env.PORT || 8123;
+server.listen(port, function(err) {
+	if(err) {
+		throw err;
+	}
+	console.log('Server is listening on port', port);
 });
+
+app.use(function (req, res, next) {
+	console.log("== Request made");
+	console.log("  - Method:", req.method);
+	console.log("  - URL:", req.url);
+	next();
+});
+
+app.use(express.static('public'));
 
 app.post("/restart-game", function(req, res, next) {
   resetGame(0, 0);
-  res.end();
+	console.log('before end');
+  res.status(200).send("Restarted the game");
+	console.log('after end');
 });
 
-app.get("*", function(req, res, next) {
-    res.type('text/html');
-    res.status(404);
+console.log('after restart');
+
+app.get("*", function(req, res) {
+  res.status(404).sendFile('public/404.html', {root: __dirname });
 });
 
-var port = process.env.PORT || 8123;
-server.listen(port, function(err) {
-    if(err) {
-        throw err;
-   }
-   console.log('Server is listening on port', port);
-});
 
-var players = {};
-var ball = {
-    x : 500,
-    y : 250,
-    xSpeed : 0,
-    ySpeed : 0,
-    radius : 5
-};
-var canvas = {
-	width: 1000,
-	height: 500
-};
-var score = {
-  player1: 0,
-  player2: 0
-};
 io.on('connection', function(socket) {
 	socket.emit('data', canvas);
   var startX = 100;
