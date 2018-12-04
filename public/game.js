@@ -38,15 +38,14 @@ function handleCloseModalButtonClick(event) {
     console.log("Clicked the cancel model button");
     var textBoxContent = document.getElementById('highscore-text-input').value;
     if(event.target.id == 'modal-accept'){
-        if(textBoxContent == ' '){
+        if(textBoxContent == ""){
           alert("You did not input a name. Please input a name or cancel.");
+          return;
         }
         else{
           socket.emit('playerWon', textBoxContent);
         }
     }
-    else{
-
     modalBackdrop.classList.add('hidden');
     sellSomethingModal.classList.add('hidden');
 
@@ -55,10 +54,7 @@ function handleCloseModalButtonClick(event) {
   		url: '/restart-game',
   		type: 'POST'
   	});
-
-  }
 }
-
 
 function showModal(event){
   console.log("Showing model");

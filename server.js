@@ -184,7 +184,7 @@ function resetBall(xSpeed, ySpeed) {
 }
 
 function resetGame(xSpeed, ySpeed) {
-	console.log("Restarting the game...")
+	console.log("Restarting the game...");
 	resetBall(xSpeed, ySpeed);
 	leftPlayerScore = 0;
 	rightPlayerScore = 0;
@@ -325,6 +325,8 @@ function updateHighscores(playerName){
 				console.log(err);
 		}
 	});
+
+	io.sockets.emit('jsonData', highscores);
 }
 
 
