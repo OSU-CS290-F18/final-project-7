@@ -65,3 +65,7 @@ socket.on('state', function(players, ball) {
   context.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
   context.fill();
 });
+
+socket.on('score', function(leftPlayerScore, rightPlayerScore) {
+  console.log('Left Player:', leftPlayerScore, 'Right Player:', rightPlayerScore);
+});

@@ -22,6 +22,9 @@ var io = socketIO(server);
 
 var urlencodedParser = bodyParser.urlencoded({extended: true});
 
+var leftPlayerScore = 0;
+var rightPlayerScore = 0;
+
 //async function myTimer() {
 //    console.log('This prints every second');
 //}
@@ -109,6 +112,9 @@ io.on('connection', function(socket) {
 
   socket.on('new player', function() {
 		if(Object.keys(players).length < 2) {
+			leftPlayerScore = 0;
+			rightPlayerScore = 0;
+
 			if(Object.keys(players).length == 1) {
 				ball.xSpeed = 350;
 				ball.ySpeed = 350;
@@ -134,7 +140,7 @@ io.on('connection', function(socket) {
       player.x -= 5;
     }
     */
-    if (data.up) {
+    if (data.up && player.y > 4) {
       player.y -= 5;
     }
     /*
@@ -142,7 +148,7 @@ io.on('connection', function(socket) {
       player.x += 5;
     }
     */
-    if (data.down) {
+    if (data.down && player.y + player.height < canvas.height + 5) {
       player.y += 5;
     }
   });
@@ -158,7 +164,6 @@ function updateBall() {
     ball.x = 500;
     ball.y = 250;
     restart = false;
-		console.log('Restart button pressed');
   }
 
   //If the ball hits the top or bottom of the board
@@ -168,16 +173,18 @@ function updateBall() {
 	}
 
 
-  //TEMPORARY: If the ball hits the side walls (bounces back)
+  //If the ball goes out of the walls
   //Left side wall
   if(ball.x - ball.radius <= 0) {
-    ball.xSpeed = ball.xSpeed * -1;
-    ball.x = ball.radius + 1;
+		restart = true;
+		leftPlayerScore += 1;
+		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
   //Right side wall
   if(ball.x + ball.radius >= canvas.width) {
-    ball.xSpeed = ball.xSpeed * -1;
-    ball.x = canvas.width - ball.radius - 1;
+		restart = true;
+		rightPlayerScore += 1;
+		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
 
 
