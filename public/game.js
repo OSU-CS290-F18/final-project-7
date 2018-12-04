@@ -1,3 +1,17 @@
+function createGameHistory(name1,number_of_wins){
+  var gameHistory = document.createElement('div');
+  
+  gameHistory.classList.add('game-history');
+  var name = document.createElement('embed');
+  name.textContent = name1;
+  gameHistory.appendChild(name)
+
+  var wins = document.createElement('embed')
+  wins.textContent = number_of_wins;
+  gameHistory.appendChild(wins);
+
+  return gameHistory;
+}
 
 document.getElementById('restart-button').addEventListener('click', function() {
   $.ajax({
