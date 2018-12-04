@@ -75,7 +75,7 @@ app.post("/update-text*", function(req, res, next) {
 });
 
 app.post("/restart-game", function(req, res, next) {
-  resetBall();
+  resetGame(0, 0);
   res.end();
 });
 
@@ -117,11 +117,6 @@ io.on('connection', function(socket) {
 		if(Object.keys(players).length < 2) {
 			leftPlayerScore = 0;
 			rightPlayerScore = 0;
-
-			if(Object.keys(players).length == 1) {
-				ball.xSpeed = 350;
-				ball.ySpeed = 350;
-			}
 			for(id in players) {
 				if(players[id].x < canvas.width/2) {
 					startX = 900;
@@ -131,26 +126,19 @@ io.on('connection', function(socket) {
 				x: startX,
 				y: 250,
 				width: 10,
-				height: 50
+				height: 50,
+				ready: false
 			};
 		}
 	});
 
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
-    /*
-    if (data.left) {
-      player.x -= 5;
-    }
-    */
+
     if (data.up && player.y > 4) {
       player.y -= 5;
     }
-    /*
-    if (data.right) {
-      player.x += 5;
-    }
-    */
+
     if (data.down && player.y + player.height < canvas.height + 5) {
       player.y += 5;
     }
@@ -159,13 +147,41 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     delete players[socket.id];
   });
+
+	socket.on('playerReady', function() {
+		if(ball.xSpeed == 0) {
+			players[socket.id].ready = true;
+			var numReady = 0;
+			for(player in players) {
+				if(players[player].ready) {
+					numReady++;
+				}
+			}
+			if(numReady == 2) {
+				ball.xSpeed = 350;
+				ball.ySpeed = 350;
+				for(player in players) {
+					players[player].ready = false;
+				}
+			}
+		}
+	});
 });
 
 var lastUpdateTime = (new Date()).getTime();
 
-function resetBall() {
+function resetBall(xSpeed, ySpeed) {
 	ball.x = 500;
 	ball.y = 250;
+	ball.xSpeed = xSpeed;
+	ball.ySpeed = ySpeed;
+}
+
+function resetGame(xSpeed, ySpeed) {
+	console.log("Restarting the game...")
+	resetBall(xSpeed, ySpeed);
+	leftPlayerScore = 0;
+	rightPlayerScore = 0;
 }
 
 function updateBall() {
@@ -181,14 +197,14 @@ function updateBall() {
   //Left side wall
   if(ball.x - ball.radius <= 0) {
 		ball.xSpeed = ball.xSpeed * -1;
-		resetBall();
+		resetBall(350, 350);
 		rightPlayerScore += 1;
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
   //Right side wall
   if(ball.x + ball.radius >= canvas.width) {
 		ball.xSpeed = ball.xSpeed * -1;
-		resetBall();
+		resetBall(-350, 350);
 		leftPlayerScore += 1
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }

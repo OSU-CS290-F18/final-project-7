@@ -94,6 +94,9 @@ document.addEventListener('keydown', function(event) {
     case 83: // S
       movement.down = true;
       break;
+    case 32: // space
+      socket.emit('playerReady');
+      break;
   }
 });
 document.addEventListener('keyup', function(event) {
@@ -129,7 +132,7 @@ socket.on('state', function(players, ball) {
 });
 
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
-  //code for when someone scores
+  console.log('Left:',leftPlayerScore,'Right:',rightPlayerScore);
 });
 
 socket.on('winner', function(winner) {
