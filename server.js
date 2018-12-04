@@ -17,6 +17,8 @@ var restart = false;
 var tickRate = 60;
 var highscores = require('./highScores.json')
 
+var fs = require('fs');
+
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
@@ -136,6 +138,10 @@ io.on('connection', function(socket) {
 		}
 	});
 
+	socket.on('playerWon', function(playerName){
+		updateHighscores(playerName);
+	});
+
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
     /*
@@ -176,7 +182,6 @@ function updateBall() {
 		ball.ySpeed = ball.ySpeed * -1;
 	}
 
-
   //If the ball goes out of the walls
   //Left side wall
   if(ball.x - ball.radius <= 0) {
@@ -192,6 +197,7 @@ function updateBall() {
 		leftPlayerScore += 1
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
+
 
 
 	for(id in players) {
@@ -281,6 +287,28 @@ function checkWinner() {
 		ball.xSpeed = 0;
 		ball.ySpeed = 0;
 	}
+}
+
+function updateHighscores(playerName){
+	console.log("playerName:", playerName);
+	if(playerName in highscores){
+		console.log("playerName");
+		var playerScore = parseInt(highscores[playerName].score);
+		playerScore++;
+		highscores[playerName].score = playerScore.toString();
+	}
+	else{
+		console.log(highscores);
+		highscores[playerName] = {
+			"score": "1"
+		};
+	}
+	var tempJsonData = JSON.stringify(highscores);
+	fs.writeFile("highScores.json", tempJsonData, function(err) {
+		if (err) {
+				console.log(err);
+		}
+	});
 }
 
 

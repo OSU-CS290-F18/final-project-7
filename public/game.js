@@ -6,19 +6,24 @@ function createGameHistory(name1,number_of_wins){
     name.textContent = name1;
     gameHistory.appendChild(name)
 
-
     var wins = document.createElement('p')
     wins.textContent = number_of_wins;
     gameHistory.appendChild(wins);
     var historyContainer = document.getElementById("games-won-container");
 
-
     historyContainer.appendChild(gameHistory);
+}
+
+function clearGameHistory(){
+  var historyContainer = document.getElementById("games-won-container");
+  while (historyContainer.firstChild) {
+    historyContainer.removeChild(historyContainer.lastChild);
+  }
 }
 
 // MODAL STUFF
 var modalBackdrop = document.querySelector('#modal-backdrop');
-var sellSomethingModal = document.querySelector('#sell-something-modal');
+var sellSomethingModal = document.querySelector('#add-highscore-modal');
 
 var closeModalButton = document.querySelector('#modal-close');
 closeModalButton.addEventListener('click', handleCloseModalButtonClick);
@@ -32,16 +37,27 @@ acceptModalButton.addEventListener('click', handleCloseModalButtonClick);
 
 function handleCloseModalButtonClick(event) {
     console.log("Clicked the cancel model button");
+    var textBoxContent = document.getElementById('highscore-text-input').value;
+    if(event.target.id == 'modal-accept'){
+        if(textBoxContent == ' '){
+          alert("You did not input a name. Please input a name or cancel.");
+        }
+        else{
+          socket.emit('playerWon', textBoxContent);
+        }
+    }
+    else{
+
     modalBackdrop.classList.add('hidden');
     sellSomethingModal.classList.add('hidden');
 
     //Save data
-
-
     $.ajax({
   		url: '/restart-game',
   		type: 'POST'
   	});
+
+  }
 }
 
 
@@ -67,6 +83,7 @@ socket.on('message', function(data) {
 
 socket.on('jsonData', function(jsonData) {
   console.log("jsonData", jsonData);
+  clearGameHistory();
   for(player in jsonData){
     console.log("Creating game history...");
     createGameHistory(player, jsonData[player].score);
@@ -129,7 +146,7 @@ socket.on('state', function(players, ball) {
 });
 
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
-  //code for when someone scores
+  console.log("Player 1: %d    Player 2: %d", leftPlayerScore, rightPlayerScore);
 });
 
 socket.on('winner', function(winner) {
