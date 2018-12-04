@@ -2,12 +2,12 @@ function createGameHistory(name1,number_of_wins){
   var gameHistory = document.createElement('div');
 
     gameHistory.classList.add('game-history');
-    var name = document.createElement('embed');
+    var name = document.createElement('p');
     name.textContent = name1;
     gameHistory.appendChild(name)
 
 
-    var wins = document.createElement('embed')
+    var wins = document.createElement('p')
     wins.textContent = number_of_wins;
     gameHistory.appendChild(wins);
     var historyContainer = document.getElementById("games-won-container");
@@ -16,6 +16,40 @@ function createGameHistory(name1,number_of_wins){
     historyContainer.appendChild(gameHistory);
 }
 
+// MODAL STUFF
+var modalBackdrop = document.querySelector('#modal-backdrop');
+var sellSomethingModal = document.querySelector('#sell-something-modal');
+
+var closeModalButton = document.querySelector('#modal-close');
+closeModalButton.addEventListener('click', handleCloseModalButtonClick);
+
+var cancelModalButton = document.querySelector('#modal-cancel');
+cancelModalButton.addEventListener('click', handleCloseModalButtonClick);
+
+var acceptModalButton = document.querySelector('#modal-accept');
+acceptModalButton.addEventListener('click', handleCloseModalButtonClick);
+
+
+function handleCloseModalButtonClick(event) {
+    console.log("Clicked the cancel model button");
+    modalBackdrop.classList.add('hidden');
+    sellSomethingModal.classList.add('hidden');
+
+    //Save data
+
+
+    $.ajax({
+  		url: '/restart-game',
+  		type: 'POST'
+  	});
+}
+
+
+function showModal(event){
+  console.log("Showing model");
+  modalBackdrop.classList.remove('hidden');
+  sellSomethingModal.classList.remove('hidden');
+}
 
 
 
@@ -29,6 +63,14 @@ document.getElementById('restart-button').addEventListener('click', function() {
 var socket = io();
 socket.on('message', function(data) {
   console.log(data);
+});
+
+socket.on('jsonData', function(jsonData) {
+  console.log("jsonData", jsonData);
+  for(player in jsonData){
+    console.log("Creating game history...");
+    createGameHistory(player, jsonData[player].score);
+  }
 });
 
 var canvas = document.getElementById('canvas');
@@ -93,7 +135,7 @@ socket.on('score', function(leftPlayerScore, rightPlayerScore) {
 socket.on('winner', function(winner) {
   userId = socket.io.engine.id
   if(winner == userId) {
-    //code for winner
+    showModal();
     console.log('you won');
   } else {
     //code for loser

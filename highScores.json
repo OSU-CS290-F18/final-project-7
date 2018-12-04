@@ -1,7 +1,12 @@
 {
-	highScores:[
-		{"name":"Ashyan", "gamesWon":"0"},
-		{"name":"Jeremy", "gamesWon":"0"},
-		{"name":"Luke", "gamesWon":"0"}
-	]
+
+	"Ashyan":{
+		"score":"1"
+	},
+	"Jeremy":{
+		"score":"2"
+	},
+	"Luke":{
+		"score":"0"
+	}
 }

@@ -15,6 +15,7 @@ var wallHittable = true;
 var playerHittable = true;
 var restart = false;
 var tickRate = 60;
+var highscores = require('./highScores.json')
 
 var app = express();
 var server = http.Server(app);
@@ -110,6 +111,7 @@ var score = {
 io.on('connection', function(socket) {
 	socket.emit('data', canvas);
   var startX = 100;
+	socket.emit('jsonData', highscores);
 
   socket.on('new player', function() {
 		if(Object.keys(players).length < 2) {

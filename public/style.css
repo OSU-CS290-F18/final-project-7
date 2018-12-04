@@ -47,6 +47,9 @@ header a {
   color: #fff;
 }
 
+.game-history{
+  height = 50px; //CHANGE THIS TO AUTO FIT
+}
 
 
 /*
