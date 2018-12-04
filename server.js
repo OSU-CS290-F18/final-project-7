@@ -187,6 +187,21 @@ function updateBall() {
 		io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
   }
 
+	if(leftPlayerScore >= 10 || rightPlayerScore >= 10) {
+		var leftSocket;
+		var rightSocket;
+		for(id in players) {
+			if(players[id].x < canvas.width/2) {
+				leftSocket = id;
+			} else {
+				rightSocket = id;
+			}
+		}
+		var winner = leftPlayerScore >= 10 ? leftSocket : rightSocket;
+		io.sockets.emit('winner', winner)
+		ball.xSpeed = 0;
+		ball.ySpeed = 0;
+	}
 
 
 	for(id in players) {

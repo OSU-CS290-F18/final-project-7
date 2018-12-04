@@ -83,3 +83,11 @@ socket.on('state', function(players, ball) {
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
   console.log('Left Player:', leftPlayerScore, 'Right Player:', rightPlayerScore);
 });
+socket.on('winner', function(winner) {
+  if(winner == socket.socket.sessionid) {
+    //code for winner
+  } else {
+    //code for loser
+  }
+
+});
