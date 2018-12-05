@@ -37,6 +37,13 @@ cancelModalButton.addEventListener('click', handleCloseModalButtonClick);
 var acceptModalButton = document.querySelector('#modal-accept');
 acceptModalButton.addEventListener('click', handleCloseModalButtonClick);
 
+var highscoretextinput = document.getElementById("highscore-text-input");
+highscoretextinput.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+    handleCloseModalButtonClick(event);
+  }
+});
+
 var statusLabel = document.querySelector('#status-label');
 
 function updateStatus(statusMessage){
@@ -47,7 +54,7 @@ function updateStatus(statusMessage){
 function handleCloseModalButtonClick(event) {
     console.log("Clicked the cancel model button");
     var textBoxContent = document.getElementById('highscore-text-input').value;
-    if(event.target.id == 'modal-accept'){
+    if(event.target.id == 'modal-accept' || event.keyCode === 13){
         if(textBoxContent == ""){
           alert("You did not input a name. Please input a name or cancel.");
           return;
