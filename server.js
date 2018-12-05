@@ -167,7 +167,7 @@ io.on('connection', function(socket) {
 				for(player in players) {
 					players[player].ready = false;
 				}
-				socket.emit('status', "Playing");
+				io.sockets.emit('status', "Playing");
 			} else {
 				if(players.length == 2) {
 					socket.emit('status', "Waiting for other player to ready up.");
