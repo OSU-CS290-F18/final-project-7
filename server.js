@@ -167,6 +167,13 @@ io.on('connection', function(socket) {
 				for(player in players) {
 					players[player].ready = false;
 				}
+				socket.emit('status', "Playing");
+			} else {
+				if(players.length == 2) {
+					socket.emit('status', "Waiting for other player to ready up.");
+				} else {
+					socket.emit('status', "Waiting for second player to join.");
+				}
 			}
 		}
 	});
@@ -286,7 +293,8 @@ function checkWinner() {
 			}
 		}
 		var winner = leftPlayerScore >= 10 ? leftSocket : rightSocket;
-		io.sockets.emit('winner', winner)
+		io.sockets.emit('winner', winner);
+		io.sockets.emit('status', 'Press space to play.')
 		ball.xSpeed = 0;
 		ball.ySpeed = 0;
 	}
