@@ -195,6 +195,7 @@ header a {
 #modal-cancel,
 #modal-accept {
   margin-right: 20px;
+  font-weight: bold;
   background-color: #00FF00;
   border-radius: 3px;
   border: 5px solid #00FF00;
