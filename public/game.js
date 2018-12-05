@@ -1,3 +1,7 @@
+window.onbeforeunload = function() {
+  return "OK, so, refreshing currently breaks the game, so please don't. Thank you.";
+};
+
 function createGameHistory(name1,number_of_wins){
     var gameHistory = document.createElement('div');
     var insertedString = name1 + ": " + number_of_wins
