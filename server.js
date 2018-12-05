@@ -98,7 +98,7 @@ app.post("/restart-game", function(req, res, next) {
 });
 
 app.get("/:sound.mp3", function(req, res, next) {
-	var file =  __dirname + '/' + req.params.sound + '.mp3';
+	var file =  __dirname + '/public/sounds/' + req.params.sound + '.mp3';
 	var rstream = fs.createReadStream(file);
 	rstream.pipe(res);
 });
