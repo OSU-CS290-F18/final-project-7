@@ -26,10 +26,13 @@ var leftPlayerScore = 0;
 var rightPlayerScore = 0;
 var winnerFound = false;
 
+var ballInitialX = 400;
+var ballInitialY = 250;
+
 var players = {};
 var ball = {
-    x : 400,
-    y : 250,
+    x : ballInitialX,
+    y : ballInitialY,
     xSpeed : 0,
     ySpeed : 0,
     radius : 5
@@ -84,12 +87,9 @@ app.use(express.static('public'));
 
 app.post("/restart-game", function(req, res, next) {
   resetGame(0, 0);
-	console.log('before end');
   res.status(200).send("Restarted the game");
-	console.log('after end');
 });
 
-console.log('after restart');
 
 app.get("*", function(req, res) {
   res.status(404).sendFile('public/404.html', {root: __dirname });
@@ -163,8 +163,8 @@ io.on('connection', function(socket) {
 var lastUpdateTime = (new Date()).getTime();
 
 function resetBall(xSpeed, ySpeed) {
-	ball.x = 500;
-	ball.y = 250;
+	ball.x = ballInitialX;
+	ball.y = ballInitialY;
 	ball.xSpeed = xSpeed;
 	ball.ySpeed = ySpeed;
 }
@@ -178,6 +178,7 @@ function resetGame(xSpeed, ySpeed) {
   for(id in players){
     players[id].y = 225;
   }
+	winnerFound = false;
 
 	io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
 }
