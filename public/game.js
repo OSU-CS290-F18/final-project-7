@@ -33,6 +33,12 @@ cancelModalButton.addEventListener('click', handleCloseModalButtonClick);
 var acceptModalButton = document.querySelector('#modal-accept');
 acceptModalButton.addEventListener('click', handleCloseModalButtonClick);
 
+var statusLabel = document.querySelector('#status-label');
+
+function updateStatus(statusMessage){
+  statusLabel.textContent = statusMessage;
+}
+
 
 function handleCloseModalButtonClick(event) {
     console.log("Clicked the cancel model button");
@@ -125,6 +131,10 @@ setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
 
+
+socket.on('status', function(statusMessage){
+  updateStatus(statusMessage);
+});
 
 var context = canvas.getContext('2d');
 socket.on('state', function(players, ball) {
