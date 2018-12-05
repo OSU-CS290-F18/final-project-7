@@ -17,6 +17,12 @@ var tickRate = 60;
 var highscores = require('./highScores.json');
 const {Howl, Howler} = require('howler');
 
+var ding = new Howl({
+	src: ['ding.mp3'],
+	autoplay: true,
+	html5: true
+});
+
 var fs = require('fs');
 
 var app = express();
@@ -91,6 +97,11 @@ app.post("/restart-game", function(req, res, next) {
   res.status(200).send("Restarted the game");
 });
 
+app.get("/:sound.mp3", function(req, res, next) {
+	var file =  __dirname + '/' + req.params.sound + '.mp3';
+	var rstream = fs.createReadStream(file);
+	rstream.pipe(res);
+});
 
 app.get("*", function(req, res) {
   res.status(404).sendFile('public/404.html', {root: __dirname });
@@ -185,6 +196,8 @@ function resetGame(xSpeed, ySpeed) {
 }
 
 function calculateTrajectory(player, hitRight) {
+	io.sockets.emit('hit');
+
 	var relativeIntersectY = (player.y+(player.height/2)) - ball.y;
 	var normalizedRelativeIntersectionY = (relativeIntersectY/(player.height/2));
 	var bounceAngle = normalizedRelativeIntersectionY * Math.PI * 5 / 12;

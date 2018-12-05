@@ -141,6 +141,13 @@ socket.on('state', function(players, ball) {
   context.fill();
 });
 
+socket.on('hit', function(sound) {
+  var sounds = ['bloop','bleep','blap','boing'];
+  var randomIndex = Math.round(Math.random() * sounds.length);
+  var playedSound = sounds[randomIndex];
+  document.getElementById(playedSound).play();
+})
+
 socket.on('score', function(leftPlayerScore, rightPlayerScore) {
   console.log("Player 1: %d    Player 2: %d", leftPlayerScore, rightPlayerScore);
   var leftScore = document.getElementById('score-container-left');
