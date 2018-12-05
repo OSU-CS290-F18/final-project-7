@@ -23,6 +23,7 @@
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
     "handlebars": "^4.0.12",
+    "howler": "^2.0.15",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {

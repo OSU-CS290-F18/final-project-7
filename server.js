@@ -14,7 +14,8 @@ var wallHittable = true;
 var playerHittable = true;
 var restart = false;
 var tickRate = 60;
-var highscores = require('./highScores.json')
+var highscores = require('./highScores.json');
+const {Howl, Howler} = require('howler');
 
 var fs = require('fs');
 
@@ -183,6 +184,23 @@ function resetGame(xSpeed, ySpeed) {
 	io.sockets.emit('score', leftPlayerScore, rightPlayerScore);
 }
 
+function calculateTrajectory(player, hitRight) {
+	var relativeIntersectY = (player.y+(player.height/2)) - ball.y;
+	var normalizedRelativeIntersectionY = (relativeIntersectY/(player.height/2));
+	var bounceAngle = normalizedRelativeIntersectionY * Math.PI * 5 / 12;
+	var ballSpeed = Math.sqrt(Math.pow(ball.xSpeed, 2) + Math.pow(ball.ySpeed, 2));
+
+	if(hitRight) {
+		ball.xSpeed = -1 * Math.abs(ballSpeed * Math.cos(bounceAngle));
+		ball.ySpeed = ballSpeed * -1 * Math.sin(bounceAngle);
+		ball.x = player.x - 6;
+	} else {
+		ball.xSpeed = Math.abs(ballSpeed * Math.cos(bounceAngle));
+		ball.ySpeed = ballSpeed * -1 * Math.sin(bounceAngle);
+		ball.x = player.x + player.width + 6;
+	}
+}
+
 function updateBall() {
 
   //If the ball hits the top or bottom of the board
@@ -211,64 +229,27 @@ function updateBall() {
 
 	for(id in players) {
 		var player = players[id];
+		var hit = false;
 		if(player.x > canvas.width/2) {
 			//Right Player
 
 			//If the ball hits the paddle's left side
-			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
+			if(ball.y <= player.y + player.height && ball.y >= player.y &&
 				 ball.x + ball.radius >= player.x && ball.x + ball.radius <= player.x + player.width) {
-				ball.xSpeed = ball.xSpeed * -1;
-				ball.x = player.x - ball.radius - 1;
+				calculateTrajectory(player, true);
 				continue;
 			}
 
-			//If the ball hits the paddle's top
-			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height))
-				{
-				ball.ySpeed = ball.ySpeed * -1;
-				ball.xSpeed = ball.xSpeed * -1;
-				ball.y = player.y - ball.radius - 1;
-				continue;
-			}
-			//If the ball hits the paddle's bottom
-			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
-				{
-				ball.ySpeed = ball.ySpeed * -1;
-				ball.xSpeed = ball.xSpeed * -1;
-				ball.y = player.y + player.height + ball.radius + 1;
-				continue;
-				}
 		} else {
 			//Left player
 
 			//If the ball hits the paddle's right side
-			if(ball.y + ball.radius <= player.y + player.height && ball.y - ball.radius >= player.y &&
+			if(ball.y <= player.y + player.height && ball.y >= player.y &&
 				 ball.x - ball.radius <= player.x + player.width && ball.x - ball.radius >= player.x) {
-        ball.xSpeed = ball.xSpeed * -1;
-				ball.x = player.x + player.width + ball.radius + 1;
+        calculateTrajectory(player, false);
 				continue;
 			}
 
-			//If the ball hits the paddle's top
-			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y + ball.radius) >= player.y && (ball.y + ball.radius) <= (player.y + player.height))
-				{
-				ball.ySpeed = ball.ySpeed * -1;
-				ball.xSpeed = ball.xSpeed * -1;
-				ball.y = player.y - ball.radius - 1;
-				continue;
-			}
-			//If the ball hits the paddle's bottom
-			if(ball.x <= (player.x + player.width) && ball.x >= player.x &&
-				(ball.y - ball.radius) <= (player.y + player.height) && (ball.y - ball.radius) >= player.y)
-				{
-				ball.ySpeed = ball.ySpeed * -1;
-				ball.xSpeed = ball.xSpeed * -1;
-				ball.y = player.y + player.height + ball.radius + 1;
-				continue;
-			}
 		}
 	}
 
