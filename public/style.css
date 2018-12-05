@@ -103,7 +103,7 @@ header a {
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: #000;
 }
 
 
@@ -127,7 +127,8 @@ header a {
   min-width: 350px;
   min-height: 300px;
   margin: 40px auto;
-  background-color: #fff;
+  background-color: #000000;
+  border: 5px solid #ffffff;
   border-radius: 15px;
 }
 
@@ -139,6 +140,7 @@ header a {
 .modal-header h3 {
   margin: 0;
   font-size: 28px;
+  color: #FFFFFF;
 }
 
 #modal-close {
@@ -150,10 +152,12 @@ header a {
   background: none;
   padding: 0;
   cursor: pointer;
+  color: #00ff00;
 }
 
 .modal-body {
   padding: 20px;
+  color: #00FF00;
 }
 
 
@@ -176,7 +180,9 @@ header a {
   flex: 6 200px;
   padding: 8px;
   font-size: 20px;
-  border: 1px solid #aaa;
+  background-color: #000000;
+  color: #ffffff;
+  border: 5px solid #ffffff;
 }
 
 
@@ -189,15 +195,20 @@ header a {
 #modal-cancel,
 #modal-accept {
   margin-right: 20px;
+  background-color: #00FF00;
+  border-radius: 3px;
+  border: 5px solid #00FF00;
+  align-items: center;
+  color: #000000;
+  padding: 10px;
 }
 
 #modal-cancel {
-  color: #333;
-  background-color: #fff;
+  background-color: #00FF00;
 }
 
 #modal-cancel:hover {
-  background-color: #eee;
+  background-color: #00AA00;
 }
 
 .error-container {
